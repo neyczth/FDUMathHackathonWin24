@@ -20,9 +20,7 @@ int main() {
             }
             else if ((cur_ch >= 'A' && cur_ch <= 'Z') || cur_ch == '*' || cur_ch == 'b') {
                 if (cur_ch == 'b') cur_ch = ' ';
-                for (int j = 0; j < charcnt; j++) {
-                    putchar(cur_ch);
-                }
+                for (int j = 0; j < charcnt; j++) putchar(cur_ch);
                 charcnt = 0;
             }
             else if (cur_ch == '!') { putchar('\n'); charcnt = 0; }
