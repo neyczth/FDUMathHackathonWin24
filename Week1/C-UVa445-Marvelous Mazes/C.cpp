@@ -15,10 +15,8 @@ int main() {
         charcnt = 0;
         for (int i = 0; i < ss.size(); i++) {
             char& cur_ch = ss[i];
-            if (isdigit(cur_ch)) {
-                charcnt += cur_ch - '0';
-            }
-            else if ((cur_ch >= 'A' && cur_ch <= 'Z') || cur_ch == '*' || cur_ch == 'b') {
+            if (isdigit(cur_ch)) charcnt += cur_ch - '0';
+            else if (isupper(cur_ch) || cur_ch == '*' || cur_ch == 'b') {
                 if (cur_ch == 'b') cur_ch = ' ';
                 for (int j = 0; j < charcnt; j++) putchar(cur_ch);
                 charcnt = 0;
