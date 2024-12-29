@@ -9,13 +9,12 @@ class Matrix {
     int size[2] = {0};
 
     void set_size(const int &num_row, const int &num_col) {
-        size[0] = num_row;
-        size[1] = num_col;
+        size[0] = num_row; size[1] = num_col;
     }
 };
 vector<Matrix> matrix_list(26);
 
-uint64_t ans = 0;
+unsigned long long ans = 0;
 bool err_flag = 0;
 class MatrixMultiplyHandler {
   public:
@@ -68,17 +67,12 @@ int main() {
 
             if (ch == '(') st.push(MatrixMultiplyHandler());
             else if (ch == ')') {
-                auto &cur_handler = st.top();
-                tmp_matrix = cur_handler.cur_matrix;
+                tmp_matrix = st.top().cur_matrix;
                 st.pop();
-                if (!st.empty()) {
-                    auto &cur_handler = st.top();
-                    cur_handler.add_matrix(tmp_matrix);
-                }
+                st.top().add_matrix(tmp_matrix);
             }
             else {
-                auto &cur_handler = st.top();
-                cur_handler.add_matrix(matrix_list[ch - 'A']);
+                st.top().add_matrix(matrix_list[ch - 'A']);
             }
         }
 
