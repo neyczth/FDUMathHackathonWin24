@@ -31,6 +31,7 @@ class Puzzle {
         for (int i = 0; i < 5; i++) {
             cout << puzzle_map[i][0];
             for (int j = 1; j < 5; j++) cout << ' ' << puzzle_map[i][j];
+            cout << endl;
         }
     }
 };
@@ -39,6 +40,7 @@ int main() {
     #ifndef ONLINE_JUDGE
         freopen("G.in", "r", stdin);
     #endif
+    ios::sync_with_stdio(false);
 
     string ss;
     Puzzle puzzle;
@@ -62,7 +64,8 @@ int main() {
         bool is_ok = true;
         string op_list = "";
         char ch;
-        while ((ch = getchar()) != '0') {
+        while (cin >> ch) {
+            if (ch == '0') break;
             if (ch == 'A' || ch == 'B' || ch == 'L' || ch == 'R') op_list += ch;
         }
         for (auto& ch : op_list) {
@@ -85,7 +88,6 @@ int main() {
 
         getline(cin, ss);
     }
-    cout << endl;
 
     return 0;
 }
