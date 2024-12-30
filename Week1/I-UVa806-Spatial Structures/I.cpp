@@ -10,7 +10,7 @@ class QuadTree {
   public:
     int dim = 0;
     bool num[MAXN][MAXN] = {0};
-    vector<uint64_t> quadtree_rep;
+    vector<int> quadtree_rep;
 
     void reset() {
         for (int i = 0; i < MAXN; i++)
@@ -20,7 +20,7 @@ class QuadTree {
 
     void set_dim(const int &_d) { dim = _d; }
 
-    void set_one(uint64_t x) {
+    void set_one(int x) {
         int u = 0, d = dim, l = 0, r = dim;
         while (x) {
             switch (x%5) {
@@ -50,7 +50,7 @@ class QuadTree {
         return -1;
     }
 
-    void build_quadtree(const uint64_t &cur_x, const uint64_t &layer, const int &u, const int &d, const int &l, const int &r) {
+    void build_quadtree(const int &cur_x, const int &layer, const int &u, const int &d, const int &l, const int &r) {
         if (d <= u || r <= l) return;
 
         int check_res = check(u, d, l, r);
@@ -74,7 +74,7 @@ class QuadTree {
 
     void print() {
         for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) putchar(num[i][j] ? '*' : '.');
+            for (int j = 0; j < dim; j++) cout << (num[i][j] ? '*' : '.');
             cout << endl;
         }
     }
@@ -88,7 +88,7 @@ int main() {
     ios::sync_with_stdio(false);
 
     int dim;
-    uint64_t x;
+    int x;
     int test_cnt = 0;
     string ss;
     while (1) {

@@ -12,7 +12,7 @@ void find_postorder(const int &pre_l, const int &pre_r,
     while (inorder[root_idx] != root_name) root_idx++;
     find_postorder(pre_l+1, pre_l+1+root_idx-in_l, in_l, root_idx);
     find_postorder(pre_r-(in_r-root_idx-1), pre_r, root_idx+1, in_r);
-    putchar(root_name);
+    cout << root_name;
 }
 
 int main() {

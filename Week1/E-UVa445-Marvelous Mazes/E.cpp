@@ -18,12 +18,12 @@ int main() {
             if (isdigit(cur_ch)) charcnt += cur_ch - '0';
             else if (isupper(cur_ch) || cur_ch == '*' || cur_ch == 'b') {
                 if (cur_ch == 'b') cur_ch = ' ';
-                for (int j = 0; j < charcnt; j++) putchar(cur_ch);
+                for (int j = 0; j < charcnt; j++) cout << cur_ch;
                 charcnt = 0;
             }
-            else if (cur_ch == '!') { putchar('\n'); charcnt = 0; }
+            else if (cur_ch == '!') { cout << endl; charcnt = 0; }
         }
-        putchar('\n');
+        cout << endl;
     }
 
     return 0;
