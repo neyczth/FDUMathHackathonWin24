@@ -1,2 +1,9 @@
 *.in
 *.exe
+*.x
+
+test.cpp
+test.exe
+text.x
+
+.vscode
