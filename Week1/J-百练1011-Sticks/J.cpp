@@ -15,8 +15,9 @@ bool backtracking(const int &num_corr_stick, const int &corr_length) {
     bool is_ok = 0;
     for (int i = 0; i < num_sticks; i++) {
         int &&rest_length = trial_length - corr_length;
-        if (!vst[i] && sticks[i] <= rest_length) {
-            vst[i] = true;
+        int last_trial = -1;
+        if (!vst[i] && sticks[i] <= rest_length && sticks[i] != last_trial) {
+            vst[i] = true; last_trial = sticks[i];
             if (rest_length == sticks[i]) is_ok |= backtracking(num_corr_stick+1, 0);
             else is_ok |= backtracking(num_corr_stick, corr_length + sticks[i]);
             if (is_ok) return true;

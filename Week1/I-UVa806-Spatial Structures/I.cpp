@@ -58,7 +58,7 @@ class QuadTree {
             quadtree_rep.push_back(cur_x);
         }
         else if (check_res == -1) {
-            int xmid = (u+d)/2, ymid = (l+r)/2;
+            int &&xmid = (u+d)/2, ymid = (l+r)/2;
             build_quadtree(cur_x+1*layer, layer*5, u, xmid, l, ymid);
             build_quadtree(cur_x+2*layer, layer*5, u, xmid, ymid, r);
             build_quadtree(cur_x+3*layer, layer*5, xmid, d, l, ymid);
