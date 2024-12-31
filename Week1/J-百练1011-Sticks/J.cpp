@@ -32,7 +32,7 @@ int main() {
     #ifndef ONLINE_JUDGE
         freopen("J.in", "r", stdin);
     #endif
-    // ios::sync_with_stdio(false);
+    ios::sync_with_stdio(false);
 
     int max_length = 0;
     while (cin >> num_sticks) {

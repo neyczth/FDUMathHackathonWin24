@@ -9,7 +9,7 @@ double cal_f(const double &x, const double &p, const double &q, const double &r,
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("K.in", "r", stdin);
+        freopen("L.in", "r", stdin);
     #endif
 
     double p, q, r, s, t, u;

@@ -25,7 +25,7 @@ bool is_blocked(const Building &a, const Building &b, const int &pos) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("J.in", "r", stdin);
+        freopen("K.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 

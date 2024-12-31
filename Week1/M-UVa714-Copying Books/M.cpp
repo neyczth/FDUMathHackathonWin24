@@ -41,7 +41,7 @@ void print_part(const uint64_t &part_length) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("L.in", "r", stdin);
+        freopen("M.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 
