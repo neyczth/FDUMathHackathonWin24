@@ -25,7 +25,7 @@ bool is_blocked(const Building &a, const Building &b, const int &pos) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("K.in", "r", stdin);
+        freopen("L.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 
@@ -49,7 +49,7 @@ int main() {
             });
         int num_unique_x = unique(x_coordinates.begin(), x_coordinates.begin() + 2*num_building) - x_coordinates.begin();
         for (int i = 0; i < num_unique_x-1; i++) {
-            int mid_x = (x_coordinates[i] + x_coordinates[i+1]) / 2;
+            int &&mid_x = (x_coordinates[i] + x_coordinates[i+1]) / 2;
             for (int j = 0; j < num_building; j++) {
                 if (building_list[j].is_visible == true) continue;
                 if (!cover(building_list[j], mid_x)) continue;

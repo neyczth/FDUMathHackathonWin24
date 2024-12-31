@@ -34,8 +34,7 @@ int main() {
             for (int j = 0; j < num_cnt; j++)
                 sum1_origin.push_back(a[i] + b[j]);
         sort(sum1_origin.begin(), sum1_origin.end());
-        int cur_idx = 0, last_sum = 0;
-        last_sum = sum1_origin[0];
+        int last_sum = sum1_origin[0];
         sum1_withcnt.push_back(Sum(sum1_origin[0], 1));
         for (int i = 1; i < num_cnt * num_cnt; i++) {
             if (sum1_origin[i] == last_sum) sum1_withcnt.back().cnt++;

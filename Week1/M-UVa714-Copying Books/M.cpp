@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cstdint>
 #define MAX_BOOK 505
 #define MAX_SCRIBER 505
 using namespace std;
