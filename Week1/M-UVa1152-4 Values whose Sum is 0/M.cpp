@@ -18,7 +18,7 @@ vector<Sum> sum1_withcnt(NUM_SUM), sum2_withcnt(NUM_SUM);
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("N.in", "r", stdin);
+        freopen("M.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 
