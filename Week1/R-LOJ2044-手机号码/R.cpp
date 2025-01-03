@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdint>
-#define foreach(i, l, r) for (uint64_t i = l; i <= r; i++)
+#define foreach(i, l, r) for (int i = l; i <= r; i++)
 using namespace std;
 
 // 数字码位数 | 第一位数字 | 第一位数字是否已经持续两个
