@@ -25,7 +25,7 @@ string get_split_string(const string &str_num_to_cut, int cut_info) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("R.in", "r", stdin);
+        freopen("A.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 
