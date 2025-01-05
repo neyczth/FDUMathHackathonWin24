@@ -47,7 +47,7 @@ void dfs2(const int &idx) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("R.in", "r", stdin);
+        freopen("D.in", "r", stdin);
     #endif
     ios::sync_with_stdio(false);
 
