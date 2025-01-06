@@ -65,7 +65,7 @@ bool check(const int& fail_idx=0, const int& fail_type=0) {
 
 int main() {
     #ifndef ONLINE_JUDGE
-        freopen("H.in", "r", stdin);
+        freopen("G.in", "r", stdin);
     #endif
 
     while (scanf("%d %d %d", &num_inputs, &num_gates, &num_outputs) != EOF) {
