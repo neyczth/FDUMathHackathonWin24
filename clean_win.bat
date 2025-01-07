@@ -1,12 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 
-for /r %%f in (*.exe *.in *.out) do (
-    del "%%f"
-    echo Deleted "%%f"
-)
-
 for /r %%d in (.) do (
+    for %%f in ("%%d\*.x" "%%d\*.in" "%%d\*.exe" "%%d\*.out") do (
+        del "%%f"
+        echo Deleted "%%f"
+    )
     if exist "%%d\.cph\" (
         rmdir /s /q "%%d\.cph\"
         set "dirpath=%%d"
