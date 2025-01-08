@@ -7,6 +7,9 @@
 *.synctex.gz
 *.toc
 *.bbl
+*.nav
+*.snm
+*.vrb
 
 test.cpp
 test.exe

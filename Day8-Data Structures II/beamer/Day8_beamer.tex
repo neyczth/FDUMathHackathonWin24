@@ -1,6 +1,7 @@
 % !TEX program = xelatex
 \documentclass[aspectratio=169]{ctexbeamer}
 \usetheme{CambridgeUS}
+\setbeamertemplate{navigation symbols}{}
 \usepackage{amsmath, amssymb}
 \usepackage[en-US]{datetime2}
 % \usepackage{enumitem}
@@ -29,7 +30,6 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \captionsetup{labelfont=bf, labelsep=quad, font=footnotesize}
-\captionsetup[sub]{labelsep=space}
 \renewcommand{\figurename}{Figure}
 \renewcommand{\tablename}{Table}
 \usepackage{booktabs}
@@ -37,9 +37,11 @@
 \SetKwProg{Function}{Function}{}{end}
 \SetFuncSty{textsc}
 \SetArgSty{}
+\SetFuncArgSty{}
 \algomargin=1em
 \SetNlSty{textbf}{}{:}
 \DontPrintSemicolon
+\usepackage{calligra}
 \usepackage{listings}
 \lstset{
     language = C++,
@@ -54,12 +56,22 @@
     showstringspaces = false,
     tabsize = 4,
     commentstyle = \it\color{gray},
+    xleftmargin = 1em,
 }
-\title{Day 8: Binary Heaps \& Disjoint Set Forests}
+\title{Day 8: Data Structures II}
+\subtitle{Binary Heaps \& Disjoint Set Forests}
 \author{Tinghai Zhang}
+\date{Jan 9, 2025}
 \newcommand{\highlight}[1]{\textbf{\textit{#1}}}
 \renewcommand{\leq}{\leqslant}
 \renewcommand{\geq}{\geqslant}
+\hypersetup{
+    pdftitle = {Day 8: Binary Heaps and Disjoint Set Forests},
+    pdfauthor = {Tinghai Zhang},
+    pdfsubject = {Data Structures},
+    pdfkeywords = {binary heaps, disjoint set forests},
+    pdfpagemode = FullScreen
+}
 \begin{document}
     \begin{frame}
         \maketitle
@@ -187,7 +199,9 @@
     \end{frame}
 
     \begin{frame}{Implementation}{Insert a new item}
-        When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to keep the max-heap property. When floating up, we swap the new item with its parent until the max-heap property is satisfied.
+        When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to maintain the max-heap property. During this process, the new item is swapped with its parent until the max-heap property is satisfied.
+
+        The time complexity of inserting a new item is $\mathcal O(\log n)$.
     \end{frame}
 
     \begin{frame}{Implementation}{Insert a new item: Example}
@@ -386,6 +400,8 @@
 
     \begin{frame}{Implementation}{Delete the highest-priority item}
         When deleting the highest-priority item from a max-heap, we first swap the root with the last item in the array, then \highlight{sink} the new root down to keep the max-heap property. The \highlight{sink-down} operation is similar to the \highlight{float-up} operation, but we swap the current node with its larger child until the max-heap property is satisfied.
+
+        The time complexity of deleting the highest-priority item is $\mathcal O(\log n)$.
     \end{frame}
 
     \begin{frame}{Implementation}{Delete the highest-priority item: Example}
@@ -630,5 +646,270 @@
                 }
             }
         \end{algorithm}
+    \end{frame}
+
+    \begin{frame}{Implementation}{Build a heap from an (unsorted) array}
+        When building a heap from an (unsorted) array, we can perform the \highlight{sink-down} operation from the last non-leaf node to the root. After each operation, the subtree rooted at the current node satisfies the max-heap property.
+
+        \begin{algorithm}[H]
+            \caption{Build a heap from an (unsorted) array}
+            \label{algo:Build a heap from an (unsorted) array}
+
+            \SetKwFunction{BuildHeap}{Build-Heap}
+            \SetKw{KwDownTo}{downto}
+            \Function{\BuildHeap{$A$}}{
+                \For{$i \gets \lfloor A.\textit{size}/2\rfloor-1$ \KwDownTo $0$}{
+                    \SinkDown{$A,i$}\;
+                }
+            }
+        \end{algorithm}
+
+        {\bf Remark. }The node with index $i$ has a child iff $\LeftChild{i} < A.\textit{size}$, i.e. $2i+1<A.\textit{size}$. Hence $i\leq\lfloor A.\textit{size}/2\rfloor-1$.
+    \end{frame}
+
+    \begin{frame}{Implementation}{Build a heap from an (unsorted) array: Time complexity}
+        We consider a complete binary tree with depth $N$ and $n=2^{N+1}-1$ nodes. The number of operation we need when building a heap is
+        $$\sum_{i=0}^{N-1}2^i(N-i)=2^{N+1}-N-2=\mathcal O(n).$$
+        Therefore, the time complexity of building a heap from an (unsorted) array is $\mathcal O(n)$. We should {\bf NOT} build a heap by inserting items one by one, which takes $\mathcal O(n\log n)$ time.
+    \end{frame}
+
+    \begin{frame}[fragile]{Implementation}{Priority queue in C++ STL}
+        A \highlight{priority queue} in C++ STL is implemented by a heap. We can define a priority queue of integers by codes below:
+
+        \begin{lstlisting}
+#include <queue>
+
+priority_queue<int> pq;                   // max-heap
+priority_queue<int, greater<int>> pq_min; // min-heap
+        \end{lstlisting}
+    \end{frame}
+
+    \begin{frame}{Implementation}{Priority queue in C++ STL}
+        Common operations of a priority queue are listed in Table \ref{tab:Operations of a priority queue in C++ STL}.
+
+        \begin{table}[!htbp]
+            \centering
+            \begin{tabular}{ccc}
+                \toprule
+                Operation & Description & Time complexity \\
+                \midrule
+                \texttt{pq.push(x)} & Insert a new item $x$ & $\mathcal O(\log n)$ \\
+                \texttt{pq.pop()} & Delete the highest-priority item & $\mathcal O(\log n)$ \\
+                \texttt{pq.top()} & Return the highest-priority item & $\mathcal O(1)$ \\
+                \bottomrule
+            \end{tabular}
+            \caption{Operations of a priority queue in C++ STL}
+            \label{tab:Operations of a priority queue in C++ STL}
+        \end{table}
+    \end{frame}
+
+    \begin{frame}{Example: \href{https://www.luogu.com.cn/problem/P1801}{[Luogu] P1801}}{Description}
+        A \highlight{black box} is a rudimentary form of database which stores an array of intergers and a special variable $i$. At the beginning, the array is empty and $i=0$. The black box supports the following operations:
+
+        \begin{itemize}
+            \item \texttt{ADD(x)}: Add $x$ to the black box.
+            \item \texttt{GET}: $i$ increases by 1, and return the $i$-th smallest number in the array.
+        \end{itemize}
+
+        Now you are required to find a best way to process a given sequence of operations. The sequence includes $n\ (n\leq 2\times 10^5)$ \texttt{ADD} operations and $m\ (m\leq 2\times 10^5)$ \texttt{GET} operations. Two arrays of interger are used to describe the operation sequence:
+
+        \begin{itemize}
+            \item $a_1,a_2,\dots,a_n$: a sequence of integers to be added to the black box. $|a_i|\leq 10^9$.
+            \item $u_1,u_2,\dots,u_m$: a \texttt{GET} operation is performed when the $u_i$-th number is added to the black box. $\{u_i\}$ is non-decreasing. No illegal operation will be contained in the sequence.
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example: \href{https://www.luogu.com.cn/problem/P1801}{[Luogu] P1801}}{Solution}
+        We can use a max-heap to maintain the smallest $i$ numbers, and a min-heap to maintain the rest numbers.
+    
+        \begin{itemize}
+            \item When a new number is added:
+            \begin{itemize}
+                \item If the number is smaller than the top of the max-heap, we add it to the max-heap, and move the top of the max-heap to the min-heap.
+                \item Otherwise, we add it to the min-heap.
+            \end{itemize}
+            \item When a \texttt{GET} operation is performed, we move the top of the min-heap to the max-heap, and print it.
+        \end{itemize}
+
+        The time complexity of each operation is $\mathcal O(\log n)$, so the total time complexity is $\mathcal O((n+m)\log n)$.
+    \end{frame}
+
+    \section{Disjoint-set forests}
+
+    \begin{frame}{Disjoint-set}{Definition}
+        A \highlight{disjoint-set} data structure maintains a collection of disjoint sets, each of which is represented by a unique \highlight{representative}. We can perform the following operations on disjoint sets:
+
+        \begin{itemize}
+            \item \textsc{Make-Set}$(x)$: create a new set containing $x$.
+            \item \textsc{Union}$(x,y)$: merge the sets containing $x$ and $y$.
+            \item \textsc{Find}$(x)$: find the representative of the set containing $x$.
+            \item \textsc{Is-Same}$(x,y)$: check whether $x$ and $y$ are in the same component.
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Disjoint-set forests}{Disjoint-set forests}
+        A fast implementation of disjoint-set is \highlight{disjoint-set forests}. We represent each set as a \highlight{tree}, where the representative is the \highlight{root} of the tree.
+
+        A \textsc{Make-Set} operation creates a tree with a single node. A \textsc{Union} operation merges two trees by making the root of one tree a child of the root of the other tree. A \textsc{Find} operation returns the root of the tree containing $x$.
+    \end{frame}
+
+    \begin{frame}{Disjoint-set forests}{Example}
+        \begin{figure}[!htbp]
+            \centering
+            \begin{tikzpicture}[
+                scale=0.8,
+                node/.style={circle, draw, minimum size=0.6cm, fill=white},
+                root/.style={circle, draw, minimum size=0.6cm, fill=red!50},
+                edge/.style={->, >=stealth, thick}
+            ]
+                % 定义节点
+                \foreach \i in {0, 1, 2, 3} {
+                    \foreach \j in {0, 1, 2, 3} {
+                        \node[node] (\i\j) at (2*\i, -2*\j) {};
+                    }
+                }
+            
+                % 设置根节点并染色
+                \node[root] (00) at (0, 0) {};    % 连通块 1 的根
+                \node[root] (21) at (4, -2) {};    % 连通块 2 的根
+                \node[root] (02) at (0, -4) {};   % 连通块 3 的根
+                \node[root] (22) at (4, -4) {};   % 连通块 4 的根
+                \node[root] (33) at (6, -6) {};   % 连通块 5 的根
+                \node[root] (11) at (2, -2) {};
+            
+                % 连接边形成树，确保连线不跨过其他节点
+                % 连通块 1
+                \draw[edge] (10) -- (00); % 1,0 -> 0,0
+                \draw[edge] (01) -- (00); % 0,1 -> 0,0
+            
+                % 连通块 2
+                \draw[edge] (20) -- (21);
+                \draw[edge] (30) -- (21);
+            
+                % 连通块 3
+                \draw[edge] (12) -- (02); % 1,2 -> 0,2
+                \draw[edge] (03) -- (02); % 0,3 -> 0,2
+            
+                % 连通块 4
+                \draw[edge] (32) -- (33); % 3,2 -> 2,2
+                \draw[edge] (23) -- (33); % 2,3 -> 2,2
+            
+                % 连通块 5
+                \draw[edge] (13) -- (22);
+                \draw[edge] (31) -- (22);
+            
+            \end{tikzpicture}
+        \end{figure}
+    \end{frame}
+
+    \begin{frame}{Disjoint-set forests}{Heuristics to improve efficiency}
+        \begin{itemize}
+            \item {\bf Union by rank}: we attach the tree with smaller \highlight{rank} to the tree with larger rank. Here the rank of a node is the height of the subtree rooted at the node.
+            \item {\bf Path compression}: when we find the root of the tree containing $x$, we make all the nodes on the path from $x$ to the root point directly to the root.
+        \end{itemize}
+    
+        With both heuristics, the time complexity of each operation is $\mathcal O(\alpha(n))$, where $n$ is the number of elements and $\alpha(\cdot)$ is the \highlight{inverse Ackermann function}. The function grows very slowly, so we can consider it as a constant.
+    \end{frame}
+
+    \begin{frame}{Disjoint-set forests}{Algorithm}
+        \small
+        \begin{algorithm}[H]
+            \caption{Disjoint-set forests}
+            \SetKwFunction{MakeSet}{Make-Set}
+            \SetKwFunction{Find}{Find}
+            \SetKwFunction{Union}{Union}
+            \SetKwFunction{Link}{Link}
+            \Function{\MakeSet{$x$}}{
+                $\textit{parent}[x] \gets x$\;
+                $\textit{rank}[x] \gets 0$\;
+            }
+    
+            \BlankLine
+    
+            \Function{\Find{$x$}}{
+                \lIf{$x\neq\textit{parent}[x]$}{$\textit{parent}[x] \gets \Find{\textit{parent}[$x$]}$}
+                \Return{$\textit{parent}[x]$}\;
+            }
+    
+            \BlankLine
+
+            \SetKwFunction{IsSame}{Is-Same}
+
+            \Function{\IsSame{$x,y$}}{
+                \Return{$\Find{x} = \Find{y}$}\;
+            }
+        \end{algorithm}
+    \end{frame}
+
+    \begin{frame}{Disjoint-set forests}{Algorithm}
+        \small
+        \begin{algorithm}[H]
+            \caption{Disjoint-set forests}
+            \SetKwFunction{MakeSet}{Make-Set}
+            \SetKwFunction{Find}{Find}
+            \SetKwFunction{Union}{Union}
+            \SetKwFunction{Link}{Link}
+            \Function{\Link{$x,y$}}{
+                \lIf{$\textit{rank}[x] > \textit{rank}[y]$}{$\textit{parent}[y] \gets x$}
+                \Else{
+                    $\textit{parent}[x] \gets y$\;
+                    \If{$\textit{rank}[x] = \textit{rank}[y]$}{
+                        $\textit{rank}[y] \gets \textit{rank}[y]+1$\;
+                    }
+                }
+            }
+
+            \BlankLine
+    
+            \Function{\Union{$x,y$}}{
+                $x \gets \Find{x}$, $y \gets \Find{y}$\;
+                \lIf{$x\neq y$}{\Link{$x,y$}}
+            }
+        \end{algorithm}
+    \end{frame}
+
+    \begin{frame}{Application: Kruskal's algorithm}{Minimum spanning tree \& Kruskal's algorithm}
+        A \highlight{minimum spanning tree} of a connected, undirected graph is a spanning tree with the smallest possible sum of edge weights. A minimum spanning tree is unique if the edge weights are distinct.
+
+        \highlight{Kruskal's algorithm} is a greedy algorithm that finds a minimum spanning tree for a connected, undirected graph. In each iteration, the algorithm finds the edge with the smallest weight which links two different components, and adds it to the minimum spanning tree. We repeat this process until all the vertices are connected.
+    \end{frame}
+
+    \begin{frame}{Application: Kruskal's algorithm}{Algorithm}
+        \footnotesize
+        \begin{algorithm}[H]
+            \caption{Kruskal's algorithm}
+            \label{algo:Kruskal's algorithm}
+    
+            \SetKwFunction{Kruskal}{Kruskal}
+            \SetKwFunction{MakeSet}{Make-Set}
+            \SetKwFunction{Find}{Find}
+            \SetKwFunction{Union}{Union}
+            \SetKwFunction{IsSame}{Is-Same}
+            \SetKwData{false}{false}
+    
+            \Function{\Kruskal{$G$}}{
+                Sort $G.\textit{edges}$ by weight in non-decreasing order\;
+                \For{$v\in G.\textit{vertices}$}{
+                    \MakeSet{$v$}\;
+                }
+                $T \gets \varnothing$\;
+                \For{$e\in G.\textit{edges}$}{
+                    \If{$\IsSame{e.\textit{from}, e.\textit{to}}=\false$}{
+                        $T \gets T\cup\{e\}$\;
+                        \Union{$e.\textit{from},e.\textit{to}$}\;
+                    }
+                }
+                \Return{$T$}\;
+            }
+        \end{algorithm}
+    \end{frame}
+
+    \appendix
+
+    \begin{frame}
+        \calligra \centering
+        \scalebox{3}{
+            Thanks for your attention!
+        }
     \end{frame}
 \end{document}

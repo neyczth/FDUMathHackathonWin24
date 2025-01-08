@@ -54,13 +54,14 @@
     numbers = left,
     numberstyle = \small,
     frame = single,
-    backgroundcolor = \color{lightgray!40!white},
+    backgroundcolor = \color{lightgray!20!white},
     showstringspaces = false,
     tabsize = 4,
     commentstyle = \it\color{gray},
 }
-\title{Day 8: Binary Heaps \& Disjoint Set Forests}
+\title{Day 8: Binary Heaps \& Disjoint-Set Forests}
 \author{Tinghai Zhang}
+\date{January 9, 2025}
 \ctexset{
     punct = kaiming,
     section = {
@@ -216,7 +217,7 @@
 
     \paragraph{Insert a new item}
 
-    When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to keep the max-heap property. When floating up, we swap the new item with its parent until the max-heap property is satisfied.
+    When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to maintain the max-heap property. During this process, the new item is swapped with its parent until the max-heap property is satisfied.
     
     An example to insert a new item is shown in Figure \ref{fig:Insert a new item into a max-heap binary tree}. The time complexity of inserting a new item is $\mathcal O(\log n)$. The algorithm is shown in Algorithm \ref{algo:Add a new item to a max-heap}.
 
@@ -727,7 +728,7 @@ priority_queue<int, greater<int>> pq_min; // min-heap
         \label{tab:Operations of a priority queue in C++ STL}
     \end{table}
 
-    \subsection{Example: \href{https://www.luogu.com.cn/problem/P1801}{Luogu-P1801}}
+    \subsection{Example: \href{https://www.luogu.com.cn/problem/P1801}{[Luogu] P1801}}
 
     \paragraph{Description}
 
@@ -787,6 +788,55 @@ priority_queue<int, greater<int>> pq_min; // min-heap
     A fast implementation of disjoint-set is \highlight{disjoint-set forests}. We represent each set as a \highlight{tree}, where the representative is the \highlight{root} of the tree.
 
     A \textsc{Make-Set} operation creates a tree with a single node. A \textsc{Union} operation merges two trees by making the root of one tree a child of the root of the other tree. A \textsc{Find} operation returns the root of the tree containing $x$.
+
+    An example of disjoint-set forests is shown in Figure \ref{fig:An example of disjoint-set forests}.
+
+    \begin{figure}[!htbp]
+        \centering
+        \begin{tikzpicture}[
+            node/.style={circle, draw, minimum size=0.8cm, fill=white},
+            root/.style={circle, draw, minimum size=0.8cm, fill=red!50},
+            edge/.style={->, >=stealth, thick}
+        ]
+            % 定义节点
+            \foreach \i in {0, 1, 2, 3} {
+                \foreach \j in {0, 1, 2, 3} {
+                    \node[node] (\i\j) at (2*\i, -2*\j) {};
+                }
+            }
+        
+            % 设置根节点并染色
+            \node[root] (00) at (0, 0) {};    % 连通块 1 的根
+            \node[root] (21) at (4, -2) {};    % 连通块 2 的根
+            \node[root] (02) at (0, -4) {};   % 连通块 3 的根
+            \node[root] (22) at (4, -4) {};   % 连通块 4 的根
+            \node[root] (33) at (6, -6) {};   % 连通块 5 的根
+            \node[root] (11) at (2, -2) {};
+        
+            % 连接边形成树，确保连线不跨过其他节点
+            % 连通块 1
+            \draw[edge] (10) -- (00); % 1,0 -> 0,0
+            \draw[edge] (01) -- (00); % 0,1 -> 0,0
+        
+            % 连通块 2
+            \draw[edge] (20) -- (21);
+            \draw[edge] (30) -- (21);
+        
+            % 连通块 3
+            \draw[edge] (12) -- (02); % 1,2 -> 0,2
+            \draw[edge] (03) -- (02); % 0,3 -> 0,2
+        
+            % 连通块 4
+            \draw[edge] (32) -- (33); % 3,2 -> 2,2
+            \draw[edge] (23) -- (33); % 2,3 -> 2,2
+        
+            % 连通块 5
+            \draw[edge] (13) -- (22);
+            \draw[edge] (31) -- (22);
+        \end{tikzpicture}
+        \caption{An example of disjoint-set forests}
+        \label{fig:An example of disjoint-set forests}
+    \end{figure}
     
     \paragraph{Heuristics to improve efficiency}
 
@@ -822,10 +872,10 @@ priority_queue<int, greater<int>> pq_min; // min-heap
 
         \BlankLine
 
-        \Function{\Union{$x,y$}}{
-            $x \gets \Find{x}$\;
-            $y \gets \Find{y}$\;
-            \lIf{$x\neq y$}{\Link{$x,y$}}
+        \SetKwFunction{IsSame}{Is-Same}
+
+        \Function{\IsSame{$x,y$}}{
+            \Return{$\Find{x} = \Find{y}$}\;
         }
 
         \BlankLine
@@ -844,10 +894,11 @@ priority_queue<int, greater<int>> pq_min; // min-heap
 
         \BlankLine
 
-        \SetKwFunction{IsSame}{Is-Same}
-
-        \Function{\IsSame{$x,y$}}{
-            \Return{$\Find{x} = \Find{y}$}\;
+        \Function{\Union{$x,y$}}{
+            $x \gets \Find{x}$, $y \gets \Find{y}$\;
+            \If{$x\neq y$}{
+                \Link{$x,y$}\;
+            }
         }
     \end{algorithm}
 
