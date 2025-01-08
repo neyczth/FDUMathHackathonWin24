@@ -2,17 +2,19 @@
 \documentclass[12pt,a4paper]{ctexart}
 \usepackage{geometry}
 \geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{amsmath, amssymb}
 \usepackage[en-US]{datetime2}
 \renewcommand{\contentsname}{Contents}
 \usepackage{enumitem}
 \setlist[itemize]{left=\parindent, itemsep=0pt, topsep=0pt}
-\usepackage[colorlinks,linkcolor=black]{hyperref}
+\usepackage[colorlinks,linkcolor=black,urlcolor=blue]{hyperref}
 \usepackage{pgf, tikz}
+\usetikzlibrary{positioning}
 \tikzset{
-    highlightnode/.style={
+    rednode/.style={
         circle,
         draw=red, % 边框颜色为红色
-        fill=red!10, % 填充颜色为红色的 20%
+        fill=red!10, % 填充颜色为红色的 10%
         thick, % 边框加粗
         minimum size=0.75cm,
         inner sep=0,
@@ -20,8 +22,8 @@
     },
     bluenode/.style={
         circle,
-        draw=blue, % 边框颜色为红色
-        fill=blue!10, % 填充颜色为红色的 20%
+        draw=blue,
+        fill=blue!10,
         thick, % 边框加粗
         minimum size=0.75cm,
         inner sep=0,
@@ -30,16 +32,34 @@
 }
 \usepackage{caption}
 \usepackage{subcaption}
-\captionsetup[figure]{labelfont=bf, labelsep=quad}
-\captionsetup[sub]{labelfont=bf, labelsep=space, font=footnotesize}
+\captionsetup{labelfont=bf, labelsep=quad, font=footnotesize}
+\captionsetup[sub]{labelsep=space}
 \renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+\usepackage{booktabs}
 \usepackage[algoruled, linesnumbered]{algorithm2e}
 \SetKwProg{Function}{Function}{}{end}
 \SetFuncSty{textsc}
+\SetFuncArgSty{}
 \algomargin=1em
 \SetNlSty{textbf}{}{:}
 \DontPrintSemicolon
-\title{Day 8: Binary Heaps \& Disjoint-Set}
+\usepackage{listings}
+\lstset{
+    language = C++,
+    breaklines = true,
+    extendedchars = false,  % 解决代码跨页时，章节标题，页眉等汉字不显示的问题
+    basicstyle = \ttfamily,
+    keywordstyle = \bfseries,
+    numbers = left,
+    numberstyle = \small,
+    frame = single,
+    backgroundcolor = \color{lightgray!40!white},
+    showstringspaces = false,
+    tabsize = 4,
+    commentstyle = \it\color{gray},
+}
+\title{Day 8: Binary Heaps \& Disjoint Set Forests}
 \author{Tinghai Zhang}
 \ctexset{
     punct = kaiming,
@@ -60,6 +80,8 @@
     }
 }
 \newcommand{\highlight}[1]{\textbf{\textit{#1}}}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
 \begin{document}
     \renewcommand{\baselinestretch}{1}
     % \setlength{\parindent}{2em}
@@ -71,9 +93,9 @@
 
     \tableofcontents
 
-    \section{Binary Heaps}
+    \section{Binary heaps}
 
-    \subsection{Priority Queue ADT}
+    \subsection{Priority queue ADT}
 
     \paragraph{Requirements}
 
@@ -86,7 +108,7 @@
 
     One of common use cases: hospital emergency department.
 
-    \paragraph{Two Basic Implementation}
+    \paragraph{Two basic implementation}
 
     \begin{itemize}
         \item (Unsorted) array
@@ -103,13 +125,13 @@
 
     Entirely unsorted is too chaotic, but entirely sorted is unnecessary. A compromise is to use a \highlight{heap}.
 
-    \subsection{Binary Heaps}
+    \subsection{Binary heaps}
 
     \highlight{Binary heaps} store items \highlight{partially sorted}. All the items are stored in a \highlight{binary tree}, which satisfies:
     \begin{itemize}
         \item The tree is \highlight{complete}, i.e. nodes in it are filled left-to-right on each level (row) of the tree.
         \begin{itemize}[left=1em]
-            \item The tree is complete if and only if the array representation of the tree is filled from index 1 to $n$.
+            \item The tree is complete if and only if the array representation of the tree is filled from index 0 to $n-1$.
         \end{itemize}
         \item The tree is \highlight{heap-ordered}, i.e. the value of each node is \highlight{greater than or equal to} the values of its children. We call the property \highlight{max-heap} property. The \highlight{min-heap} property is defined similarly.
     \end{itemize}
@@ -132,36 +154,41 @@
         ]
         
         % 绘制大根堆的二叉树结构
-        \node {50} % 根节点
+        \node(0) {50} % 根节点
             child {
-                node {40} % 左子节点
+                node(1) {40} % 左子节点
                 child {
-                    node {30} % 左子节点的左子节点
-                    child { node {10} }
-                    child { node {5} }
+                    node(3) {30} % 左子节点的左子节点
+                    child { node(7) {10} }
+                    child { node(8) {5} }
                 }
                 child {
-                    node {20} % 左子节点的右子节点
-                    child { node {15} }
-                    child { node {8} }
+                    node(4) {20} % 左子节点的右子节点
+                    child { node(9) {15} }
+                    child { node(10) {8} }
                 }
             }
             child {
-                node {35} % 右子节点
+                node(2) {35} % 右子节点
                 child {
-                    node {25} % 右子节点的左子节点
-                    child { node {12} }
+                    node(5) {25} % 右子节点的左子节点
+                    child { node(11) {12} }
                     child [missing]
                 }
-                child { node {18} }
+                child { node(6) {18} }
             };
+
+            \foreach \i in {0, ..., 11} {
+                \node [font=\footnotesize, below = -0.1cm of \i, draw=none] {[\i]};
+            }
         \end{tikzpicture}
         \caption{A max-heap binary tree}
+        \caption*{The numbers in the square brackets are the indices of the array representation of the binary tree.}
     \end{figure}
 
     \subsection{Implementation}
 
-    \paragraph{Find Parent and Child Nodes}
+    \paragraph{Find parent and child nodes}
 
     The algorithm to find the parent and child nodes of a node at index $i$ in the array representation of a binary heap is shown in Algorithm \ref{algo:Find parent and child nodes}.
 
@@ -170,27 +197,29 @@
         \label{algo:Find parent and child nodes}
         \SetKwFunction{Parent}{Parent}
         \Function{\Parent{$i$}}{
-            \Return{$\lfloor i/2\rfloor$}
+            \Return{$\lfloor (i-1)/2\rfloor$}
         }
 
         \BlankLine
 
         \SetKwFunction{LeftChild}{Left-Child}
         \Function{\LeftChild{$i$}}{
-            \Return{$2i$}
+            \Return{$2i+1$}
         }
 
         \BlankLine
 
         \SetKwFunction{RightChild}{Right-Child}
         \Function{\RightChild{$i$}}{
-            \Return{$2i+1$}
+            \Return{$2i+2$}
         }
     \end{algorithm}
 
-    \paragraph{Insert a New Item}
+    \paragraph{Insert a new item}
 
-    When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to keep the max-heap property. An example to insert a new item is shown in Figure \ref{fig:Insert a new item into a max-heap binary tree}.
+    When inserting a new item into a max-heap, we add it to the end of the array and then \highlight{float} it up to keep the max-heap property. When floating up, we swap the new item with its parent until the max-heap property is satisfied.
+    
+    An example to insert a new item is shown in Figure \ref{fig:Insert a new item into a max-heap binary tree}. The time complexity of inserting a new item is $\mathcal O(\log n)$. The algorithm is shown in Algorithm \ref{algo:Add a new item to a max-heap}.
 
     \begin{figure}[!htbp]
         % 第一行：2 个子图
@@ -271,7 +300,7 @@
                     child {
                         node {25}
                         child { node {12} }
-                        child { node[highlightnode] {45} }
+                        child { node[rednode] {45} }
                     }
                     child { node {18} }
                 };
@@ -315,7 +344,7 @@
                 child {
                     node {35}
                     child {
-                        node[highlightnode] {45}
+                        node[rednode] {45}
                         child { node {12} }
                         child { node {25} }
                     }
@@ -355,7 +384,7 @@
                     }
                 }
                 child {
-                    node[highlightnode] {45}
+                    node[rednode] {45}
                     child {
                         node {35}
                         child { node {12} }
@@ -370,8 +399,6 @@
         \label{fig:Insert a new item into a max-heap binary tree}
     \end{figure}
 
-    The algorithm to insert a new item into a max-heap is shown in Algorithm \ref{algo:Add a new item to a max-heap}.
-
     \begin{algorithm}[!htbp]
         \caption{Add a new item to a max-heap}
         \label{algo:Add a new item to a max-heap}
@@ -380,21 +407,22 @@
         \Function{\Insert{$A,x$}}{
             \SetKwFunction{Pushback}{Push-back}
             $A.\Pushback(x)$\;
-            $A.\textit{size} \gets A.\textit{size} + 1$\;
-            \FloatUp{$A.\textit{size}$}\;
+            \FloatUp{$A.\textit{size}-1$}\;
         }
         \BlankLine
         \Function{\FloatUp{$i$}}{
-            \While{$i > 1$ and $A[i] > A[\Parent{i}]$}{
+            \While{$i > 0$ and $A[i] > A[\Parent{i}]$}{
                 Swap $A[i]$ and $A[\Parent{i}]$\;
                 $i \gets \Parent{i}$\;
             }
         }
     \end{algorithm}
 
-    \subsection{Delete the Highest-Priority Item}
+    \paragraph{Delete the highest-priority item}
 
-    When deleting the highest-priority item from a max-heap, we first swap the root with the last item in the array, then \highlight{sink} the new root down to keep the max-heap property. An example to delete the highest-priority item is shown in Figure \ref{fig:Delete the highest-priority item from a max-heap binary tree}.
+    When deleting the highest-priority item from a max-heap, we first swap the root with the last item in the array, then \highlight{sink} the new root down to keep the max-heap property. The \highlight{sink-down} operation is similar to the \highlight{float-up} operation, but we swap the current node with its larger child until the max-heap property is satisfied.
+    
+    An example to delete the highest-priority item is shown in Figure \ref{fig:Delete the highest-priority item from a max-heap binary tree}. The time complexity of deleting the highest-priority item is $\mathcal O(\log n)$. The algorithm is shown in Algorithm \ref{algo:Delete the highest-priority item from a max-heap}.
 
     \begin{figure}[!htbp]
         % 第一行：2 个子图
@@ -414,7 +442,7 @@
                 }
             ]
             % 初始大根堆
-            \node[highlightnode] {50}
+            \node[rednode] {50}
                 child {
                     node {40}
                     child {
@@ -475,7 +503,7 @@
                     child {
                         node {35}
                         child { node {12} }
-                        child { node[highlightnode] {50} }
+                        child { node[rednode] {50} }
                     }
                     child { node {18} }
                 };
@@ -617,4 +645,249 @@
         \caption{An example of deleting the highest-priority item from a max-heap binary tree}
         \label{fig:Delete the highest-priority item from a max-heap binary tree}
     \end{figure}
+
+    \begin{algorithm}[!htbp]
+        \caption{Delete the highest-priority item from a max-heap}
+        \label{algo:Delete the highest-priority item from a max-heap}
+
+        \SetKwFunction{Delete}{Delete}
+        \SetKwFunction{SinkDown}{Sink-Down}
+        \Function{\Delete{$A$}}{
+            \SetKwFunction{Popback}{Pop-back}
+            Swap $A[0]$ and $A[A.\textit{size}-1]$\;
+            $A.\Popback()$\;
+            \SinkDown{$A,0$}\;
+        }
+        
+        \BlankLine
+
+        \Function{\SinkDown{$A,i$}}{
+            \While{$\LeftChild{i} < A.\textit{size}$}{
+                \tcp*[l]{Find the larger child}
+                $j \gets \LeftChild{i}$\;
+                \If{$j+1 < A.\textit{size}$ and $A[j+1] > A[j]$}{
+                    $j \gets j+1$\;
+                }
+                \BlankLine
+                \lIf{$A[i] \geq A[j]$}{\Return}
+                \BlankLine
+                Swap $A[i]$ and $A[j]$\;
+                $i \gets j$\;
+            }
+        }
+    \end{algorithm}
+
+    \paragraph{Build a heap from an (unsorted) array}
+
+    When building a heap from an (unsorted) array, we can perform the \highlight{sink-down} operation from the last non-leaf node to the root. After each operation, the subtree rooted at the current node satisfies the max-heap property.
+
+    \begin{algorithm}[!htbp]
+        \caption{Build a heap from an (unsorted) array}
+        \label{algo:Build a heap from an (unsorted) array}
+
+        \SetKwFunction{BuildHeap}{Build-Heap}
+        \SetKw{KwDownTo}{downto}
+        \Function{\BuildHeap{$A$}}{
+            \For{$i \gets \lfloor A.\textit{size}/2\rfloor-1$ \KwDownTo $0$}{
+                \SinkDown{$A,i$}\;
+            }
+        }
+    \end{algorithm}
+
+    {\bf Remark. }The node with index $i$ has a child iff $\LeftChild{i} < A.\textit{size}$, i.e. $2i+1<A.\textit{size}$. Hence $i\leq\lfloor A.\textit{size}/2\rfloor-1$.
+
+    We consider a complete binary tree with depth $N$ and $n=2^{N+1}-1$ nodes. The number of operation we need when building a heap is
+    $$\sum_{i=0}^{N-1}2^i(N-i)=2^{N+1}-N-2=\mathcal O(n).$$
+    Therefore, the time complexity of building a heap from an (unsorted) array is $\mathcal O(n)$. We should {\bf NOT} build a heap by inserting items one by one, which takes $\mathcal O(n\log n)$ time.
+
+    \subsection{Priority queue in C++ STL}
+
+    A \highlight{priority queue} in C++ STL is implemented by a heap. We can define a priority queue of integers by codes below:
+
+    \begin{lstlisting}
+#include <queue>
+
+priority_queue<int> pq;                   // max-heap
+priority_queue<int, greater<int>> pq_min; // min-heap
+    \end{lstlisting}
+    
+    Common operations of a priority queue are listed in Table \ref{tab:Operations of a priority queue in C++ STL}.
+
+    \begin{table}[!htbp]
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            Operation & Description & Time complexity \\
+            \midrule
+            \texttt{pq.push(x)} & Insert a new item $x$ & $\mathcal O(\log n)$ \\
+            \texttt{pq.pop()} & Delete the highest-priority item & $\mathcal O(\log n)$ \\
+            \texttt{pq.top()} & Return the highest-priority item & $\mathcal O(1)$ \\
+            \bottomrule
+        \end{tabular}
+        \caption{Operations of a priority queue in C++ STL}
+        \label{tab:Operations of a priority queue in C++ STL}
+    \end{table}
+
+    \subsection{Example: \href{https://www.luogu.com.cn/problem/P1801}{Luogu-P1801}}
+
+    \paragraph{Description}
+
+    A \highlight{black box} is a rudimentary form of database which stores an array of intergers and a special variable $i$. At the beginning, the array is empty and $i=0$. The black box supports the following operations:
+
+    \begin{itemize}
+        \item \texttt{ADD(x)}: Add $x$ to the black box.
+        \item \texttt{GET}: $i$ increases by 1, and return the $i$-th smallest number in the array.
+    \end{itemize}
+
+    Now you are required to find a best way to process a given sequence of operations. The sequence includes $n$ \texttt{ADD} operations and $m$ \texttt{GET} operations. Two arrays of interger are used to describe the operation sequence:
+
+    \begin{itemize}
+        \item $a_1,a_2,\dots,a_n$: a sequence of integers to be added to the black box.
+        \item $u_1,u_2,\dots,u_m$: a \texttt{GET} operation is performed when the $u_i$-th number is added to the black box. No illegal operation will be contained in the sequence.
+    \end{itemize}
+
+    \paragraph{Constraints}
+
+    \begin{itemize}
+        \item $1\leq n,m\leq 2\times 10^5$;
+        \item $|a_i|\leq 2\times 10^9$;
+        \item $\{u_i\}$ is non-decreasing.
+        \item Time limit: 0.5s / Memory limit: 500MB.
+    \end{itemize}
+
+    \paragraph{Solution}
+
+    We can use a max-heap to maintain the smallest $i$ numbers, and a min-heap to maintain the rest numbers.
+    
+    \begin{itemize}
+        \item When a new number is added:
+        \begin{itemize}[left=1em]
+            \item If the number is smaller than the top of the max-heap, we add it to the max-heap, and move the top of the max-heap to the min-heap.
+            \item Otherwise, we add it to the min-heap.
+        \end{itemize}
+        \item When a \texttt{GET} operation is performed, we move the top of the min-heap to the max-heap, and print it.
+    \end{itemize}
+
+    The time complexity of each operation is $\mathcal O(\log n)$, so the total time complexity is $\mathcal O((n+m)\log n)$.
+
+    \section{Disjoint-set forests}
+
+    \subsection{Disjoint-set}
+
+    A \highlight{disjoint-set} data structure maintains a collection of disjoint sets, each of which is represented by a unique \highlight{representative}. We can perform the following operations on disjoint sets:
+
+    \begin{itemize}
+        \item \textsc{Make-Set}$(x)$: create a new set containing $x$.
+        \item \textsc{Union}$(x,y)$: merge the sets containing $x$ and $y$.
+        \item \textsc{Find}$(x)$: find the representative of the set containing $x$.
+        \item \textsc{Is-Same}$(x,y)$: check whether $x$ and $y$ are in the same component.
+    \end{itemize}
+
+    \subsection{Disjoint-set forests}
+
+    A fast implementation of disjoint-set is \highlight{disjoint-set forests}. We represent each set as a \highlight{tree}, where the representative is the \highlight{root} of the tree.
+
+    A \textsc{Make-Set} operation creates a tree with a single node. A \textsc{Union} operation merges two trees by making the root of one tree a child of the root of the other tree. A \textsc{Find} operation returns the root of the tree containing $x$.
+    
+    \paragraph{Heuristics to improve efficiency}
+
+    \begin{itemize}
+        \item {\bf Union by rank}: we attach the tree with smaller \highlight{rank} to the tree with larger rank. Here the rank of a node is the height of the subtree rooted at the node.
+        \item {\bf Path compression}: when we find the root of the tree containing $x$, we make all the nodes on the path from $x$ to the root point directly to the root.
+    \end{itemize}
+
+    With both heuristics, the time complexity of each operation is $\mathcal O(\alpha(n))$, where $n$ is the number of elements and $\alpha(\cdot)$ is the \highlight{inverse Ackermann function}. The function grows very slowly, so we can consider it as a constant.
+    
+    The algorithm is shown in Algorithm \ref{algo:Disjoint-set forests}.
+
+    \begin{algorithm}
+        \caption{Disjoint-set forests}
+        \label{algo:Disjoint-set forests}
+        \SetKwFunction{MakeSet}{Make-Set}
+        \SetKwFunction{Find}{Find}
+        \SetKwFunction{Union}{Union}
+        \SetKwFunction{Link}{Link}
+        \Function{\MakeSet{$x$}}{
+            $\textit{parent}[x] \gets x$\;
+            $\textit{rank}[x] \gets 0$\;
+        }
+
+        \BlankLine
+
+        \Function{\Find{$x$}}{
+            \If{$x\neq\textit{parent}[x]$}{
+                $\textit{parent}[x] \gets \Find{\textit{parent}[$x$]}$\;
+            }
+            \Return{$\textit{parent}[x]$}\;
+        }
+
+        \BlankLine
+
+        \Function{\Union{$x,y$}}{
+            $x \gets \Find{x}$\;
+            $y \gets \Find{y}$\;
+            \lIf{$x\neq y$}{\Link{$x,y$}}
+        }
+
+        \BlankLine
+
+        \Function{\Link{$x,y$}}{
+            \uIf{$\textit{rank}[x] > \textit{rank}[y]$}{
+                $\textit{parent}[y] \gets x$\;
+            }
+            \Else{
+                $\textit{parent}[x] \gets y$\;
+                \If{$\textit{rank}[x] = \textit{rank}[y]$}{
+                    $\textit{rank}[y] \gets \textit{rank}[y]+1$\;
+                }
+            }
+        }
+
+        \BlankLine
+
+        \SetKwFunction{IsSame}{Is-Same}
+
+        \Function{\IsSame{$x,y$}}{
+            \Return{$\Find{x} = \Find{y}$}\;
+        }
+    \end{algorithm}
+
+    \subsection{Application: Kruskal's algorithm}
+
+    \paragraph{Minimum spanning tree}
+
+    A \highlight{minimum spanning tree} of a connected, undirected graph is a spanning tree with the smallest possible sum of edge weights. A minimum spanning tree is unique if the edge weights are distinct.
+
+    \paragraph{Kruskal's algorithm}
+
+    \highlight{Kruskal's algorithm} is a greedy algorithm that finds a minimum spanning tree for a connected, undirected graph. In each iteration, the algorithm finds the edge with the smallest weight which links two different components, and adds it to the minimum spanning tree. We repeat this process until all the vertices are connected.
+
+    The algorithm is shown in Algorithm \ref{algo:Kruskal's algorithm}.
+
+    \begin{algorithm}[!htbp]
+        \caption{Kruskal's algorithm}
+        \label{algo:Kruskal's algorithm}
+
+        \SetKwFunction{Kruskal}{Kruskal}
+        \SetKwFunction{MakeSet}{Make-Set}
+        \SetKwFunction{Find}{Find}
+        \SetKwFunction{Union}{Union}
+        \SetKwFunction{IsSame}{Is-Same}
+        \SetKwData{false}{false}
+
+        \Function{\Kruskal{$G$}}{
+            Sort $G.\textit{edges}$ by weight in non-decreasing order\;
+            \For{$v\in G.\textit{vertices}$}{
+                \MakeSet{$v$}\;
+            }
+            $T \gets \varnothing$\;
+            \For{$e\in G.\textit{edges}$}{
+                \If{$\IsSame{e.\textit{from}, e.\textit{to}}=\false$}{
+                    $T \gets T\cup\{e\}$\;
+                    \Union{$e.\textit{from},e.\textit{to}$}\;
+                }
+            }
+            \Return{$T$}\;
+        }
+    \end{algorithm}
 \end{document}
