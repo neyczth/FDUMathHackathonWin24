@@ -2,6 +2,10 @@
 *.out
 *.exe
 *.x
+*.aux
+*.log
+*.synctex.gz
+*.toc
 
 test.cpp
 test.exe
