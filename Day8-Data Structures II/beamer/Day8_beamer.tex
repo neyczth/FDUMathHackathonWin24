@@ -637,9 +637,7 @@
             \Function{\SinkDown{$A,i$}}{
                 \While{$\LeftChild{i} < A.\textit{size}$}{
                     $j \gets \LeftChild{i}$\;
-                    \lIf{$j+1 < A.\textit{size}$ and $A[j+1] > A[j]$}{
-                        $j \gets j+1$
-                    }
+                    \lIf{$j+1 < A.\textit{size}$ and $A[j+1] > A[j]$}{$j \gets j+1$}
                     \lIf{$A[i] \geq A[j]$}{\Return}
                     Swap $A[i]$ and $A[j]$\;
                     $i \gets j$\;
