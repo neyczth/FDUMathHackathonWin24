@@ -1,10 +1,9 @@
 #!/bin/bash
 
-find . -type f \( \
-    -name "*.x" -o \
-    -name "*.in" -o \
-    -name "*.exe" -o \
-    -name "*.out" \
-\) -delete
+file_types=("*.x" "*.in" "*.out" "*.exe")
 
-find . -type d -name ".cph" -exec rm -rf {} +
+for ext in "${file_types[@]}"; do
+    find . -type f -name "$ext" -exec rm -f {} \;
+done
+
+find . -type d -name ".cph" -exec rm -rf {} \;
