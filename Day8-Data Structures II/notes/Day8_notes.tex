@@ -704,12 +704,14 @@
 
     A \highlight{priority queue} in C++ STL is implemented by a heap. We can define a priority queue of integers by codes below:
 
+    {\small
     \begin{lstlisting}
 #include <queue>
+using namespace std;
 
-priority_queue<int> pq;                   // max-heap
-priority_queue<int, greater<int>> pq_min; // min-heap
-    \end{lstlisting}
+priority_queue<int> pq;  // max-heap
+priority_queue<int, vector<int>, greater<int>> pq_min;  // min-heap
+    \end{lstlisting}}
     
     Common operations of a priority queue are listed in Table \ref{tab:Operations of a priority queue in C++ STL}.
 
